@@ -22,4 +22,5 @@ public class Flight {
         airline = a;
         price = p;
     }
+ 
 }
