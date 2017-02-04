@@ -5,11 +5,12 @@
  */
 package com.lelecaps.flightsearch;
 
-import com.lelecaps.flightsearch.data.Airport;
-import com.lelecaps.flightsearch.data.Airline;
-import com.lelecaps.flightsearch.data.Flight;
+import com.lelecaps.flightsearch.data.*;
 import java.util.*;
 import java.io.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 /**
  *
@@ -19,18 +20,22 @@ public class FlightSearch {
 
     ArrayList<Airport> airports = new ArrayList<>();
     ArrayList<Airline> airlines = new ArrayList<>();
+    ArrayList<Flight> flights = new ArrayList<>();
 
     /**
      * @param args the command line arguments
+     * @throws java.io.FileNotFoundException
+     * @throws java.text.ParseException
      */
-    public static void main(String[] args) throws FileNotFoundException {
-        // TODO code application logic here
+    public static void main(String[] args) throws FileNotFoundException, ParseException {
         String origin, destination;
         int adult, child, infant;
         Date departure = new Date();
+        
+        DateFormat df = new SimpleDateFormat("dd/MM/yyyy"); 
+        String date;
         Date today = new Date();
         FlightSearch fs = new FlightSearch();
-        ArrayList<Flight> flights = new ArrayList<>();
         
         fs.setup();
         
@@ -41,7 +46,8 @@ public class FlightSearch {
             System.out.println("Insert airport of destination: ");
             destination = scan.nextLine();
             System.out.println("Insert date of departure: ");
-            departure = scan.next();
+            date = scan.nextLine();
+            departure = df.parse(date);
             System.out.println("Insert number of adults: ");
             adult = scan.nextInt();
             System.out.println("Insert number of children: ");
@@ -51,7 +57,9 @@ public class FlightSearch {
             
             scan.close();
         }
-        flights = (searchRoute(origin, destination));
+        fs.searchRoute(origin, destination);
+        System.out.println("Sono stati trovati i seguenti voli.");
+        System.out.println(fs.flights.toString());
     }
 
     void setup() {
@@ -75,21 +83,26 @@ public class FlightSearch {
         airlines.add(new Airline("U2", "Easyjet", 19.90));
     }
 
-    public ArrayList<Flight> searchRoute(String o, String d) throws FileNotFoundException {
-        Scanner scanner = new Scanner(new File("resources/flights.csv"));
-        scanner.useDelimiter(",");
-        ArrayList<Flight> flights = new ArrayList<>();
-
-        while (scanner.hasNextLine()) {
-            if (o == scanner.next()) {
-                if (d == scanner.next()) {
-                    flights.add(new Flight(o, d, scanner.next(), scanner.nextInt()));
+    void searchRoute(String o, String d) throws FileNotFoundException {
+        try (Scanner scanner = new Scanner(new File("src/main/resources/flights.csv"))) {
+//            scanner.useDelimiter(",");
+            flights = new ArrayList<>();
+            scanner.nextLine(); // exclude first row
+            while (scanner.hasNextLine()) {
+                String[] row = scanner.nextLine().split(",");
+                String origine = row[0];
+                if (o.equals(origine)) {
+                    String destinazione = row[1];
+                    if (d.equals(destinazione)) {
+                        String volo = row[2];
+                        int prezzo = Integer.parseInt(row[3]);
+                        flights.add(new Flight(origine, destinazione, volo, prezzo));
+                        System.out.println("O: " +origine+", D: "+destinazione+", V: "+volo+", P: "+prezzo);
+                    }
                 }
+//                scanner.nextLine();
             }
-            scanner.nextLine();
+            scanner.close();
         }
-        return flights;
-
     }
-
 }
