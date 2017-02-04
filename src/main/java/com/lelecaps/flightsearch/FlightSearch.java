@@ -28,10 +28,10 @@ public class FlightSearch {
         int adult, child, infant;
         Date departure = new Date();
 
-        FlightSearch ob = new FlightSearch();
+        FlightSearch fs = new FlightSearch();
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-        ob.setup();
+        fs.setup();
 
         try {
             System.out.print("Insert your origin: ");
