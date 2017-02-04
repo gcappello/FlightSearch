@@ -10,7 +10,7 @@ package com.lelecaps.flightsearch.data;
  * @author gabriele
  */
 public class Airline {
-    // test
+    
     String code;
     String name;
     double infant_price;
