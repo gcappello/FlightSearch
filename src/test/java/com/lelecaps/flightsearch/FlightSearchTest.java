@@ -13,7 +13,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 /**
