@@ -18,22 +18,25 @@ import java.util.Date;
  * @author gabriele
  */
 public class FlightSearchMain {
-    
-    public static void main(String[] args) throws FileNotFoundException, ParseException{
+
+    public static void main(String[] args) throws FileNotFoundException, ParseException {
         DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
-        
-        Calendar c = Calendar.getInstance();
-        c.add(Calendar.DAY_OF_MONTH, 2);
-        
-        Date d = df.parse(df.format(c.getTime()));
-        
-        String date = df.format(d);
-        
-        FlightSearch fs = new FlightSearch("BCN", "MAD", "07/02/2017", 1, 2, 0);
+
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        cal.add(Calendar.DAY_OF_MONTH, 2);
+
+        String date = df.format(cal.getTime());
+
+//        FlightSearch fs = new FlightSearch("BCN", "MAD", "07/02/2017", 1, 2, 0);
+        FlightSearch fs = new FlightSearch("BCN", "MAD", date, 1, 2, 0);
         for (ResultFlight rf : fs.results) {
             System.out.println(rf.toString());
         }
         System.exit(0);
     }
-    
+
 }

@@ -27,10 +27,11 @@ public class ResultFlight {
     public double getPrice(){
         return price;
     }
-    
+  
     @Override
     public String toString(){
         DecimalFormat df = new DecimalFormat("#.##");
         return getFlight() + ", " + df.format(getPrice()) + " €";
     }
+ 
 }
