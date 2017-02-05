@@ -20,4 +20,12 @@ public class Airline {
         name = pname;
         infant_price = pinfant_price;
     }
+    
+    public String getCode(){
+        return code;
+    }
+    
+    public double getInfantPrice(){
+        return infant_price;
+    }
 }

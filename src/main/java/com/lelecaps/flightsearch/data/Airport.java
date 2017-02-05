@@ -18,4 +18,8 @@ public class Airport {
         code = pcode;
         city = pcity;
     }
+    
+    public String getCode(){
+        return code;
+    }
 }

@@ -11,16 +11,21 @@ package com.lelecaps.flightsearch.data;
  */
 public class Flight {
 
-    String origin;
-    String destination;
-    String airline;
+    String flightCode;
     int price;
 
-    public Flight(String o, String d, String a, int p) {
-        origin = o;
-        destination = d;
-        airline = a;
+    public Flight(String a, int p) {
+        
+        flightCode = a;
         price = p;
+    }
+    
+    public String getAirline(){
+        return flightCode;
+    }
+    
+    public int getPrice(){
+        return price;
     }
  
 }

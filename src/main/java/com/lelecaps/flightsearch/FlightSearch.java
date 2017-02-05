@@ -17,74 +17,47 @@ import java.text.SimpleDateFormat;
  *
  * @author gabriele
  */
-public class FlightSearch {
+public final class FlightSearch {
 
-    ArrayList<Airport> airports = new ArrayList<>();
-    ArrayList<Airline> airlines = new ArrayList<>();
-    ArrayList<Flight> flights = new ArrayList<>();
+    ArrayList<Airport> airports;
+    ArrayList<Airline> airlines;
+    ArrayList<Flight> flights;
+    ArrayList<ResultFlight> results;
+    String origin, destination;
+    int adult, child, infant, period;
+    double tot_price;
 
     /**
-     * @param args the command line arguments
+     * @param origin
+     * @param destination
+     * @param date
+     * @param adult
+     * @param infant
+     * @param child
      * @throws java.io.FileNotFoundException
      * @throws java.text.ParseException
      */
-    public static void main(String[] args) throws FileNotFoundException, ParseException {
-        // input data
-        String origin, destination;
-        int adult, child, infant;
-        Date departure;
-
+    public FlightSearch(String origin, String destination, String date, int adult, int child, int infant) throws FileNotFoundException, ParseException {
+        this.airports = new ArrayList<>();
+        this.airlines = new ArrayList<>();
+        this.flights = new ArrayList<>();
+        this.results = new ArrayList<>();
+        
         DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
         DecimalFormat decf = new DecimalFormat("#.##");
-        String date;
+        
+        Date departure;
         Date today = df.parse(df.format(Calendar.getInstance().getTime()));
-        int period;
-        FlightSearch fs = new FlightSearch();
+//        FlightSearch fs = new FlightSearch();
 
-        fs.setup();
+        setup();
 
-        try (Scanner scan = new Scanner(System.in)) {
-            // reading request
-            System.out.println("Insert airport of origin: ");
-            origin = scan.nextLine();
-            if (!fs.searchAirport(origin)) {
-                fs.forceExit("airport");
-            }
-            System.out.println("Insert airport of destination: ");
-            destination = scan.nextLine();
-            if (!fs.searchAirport(destination)) {
-                fs.forceExit("airport");
-            }
-            System.out.println("Insert date of departure (dd/MM/yyyy): ");
-            date = scan.nextLine();
-            departure = df.parse(date);
-            period = (int) ((departure.getTime() - today.getTime()) / (24 * 60 * 60 * 1000));
-//            System.out.println("today is " + today + ", depart " + departure +", period " + period);
-            if (period <= 0) {
-                fs.forceExit("date");
-            }
-            System.out.println("Insert number of adults: ");
-            adult = scan.nextInt();
-            if (adult <= 0) {
-                fs.forceExit("adult");
-            }
-            System.out.println("Insert number of children: ");
-            child = scan.nextInt();
-            if (child < 0) {
-                fs.forceExit("");
-            }
-            System.out.println("Insert number of infants: ");
-            infant = scan.nextInt();
-            if (infant < 0) {
-                fs.forceExit("");
-            }
-            System.out.println();
-            scan.close();
-        }
+        departure = df.parse(date);
+        period = (int) ((departure.getTime() - today.getTime()) / (24 * 60 * 60 * 1000));
 
-        fs.searchRoute(origin, destination);
+        searchRoute(origin, destination);
 
-        if (fs.flights.isEmpty()) {
+        if (flights.isEmpty()) {
             System.out.println("no flights available");
         } else {
             int percentage;
@@ -102,46 +75,49 @@ public class FlightSearch {
                 percentage = 150;
             }
 
-            for (int i = 0; i < fs.flights.size(); i++) {
-                double full_price = (double) Math.round(fs.flights.get(i).getPrice() * percentage) / 100;
-                double tot_price = 0;
+            for (int i = 0; i < flights.size(); i++) {
+                double full_price = (double) Math.round(flights.get(i).getPrice() * percentage) / 100;
                 String adultString = "", childString = "", infantString = "";
-                
-                if (adult == 1 && child == 0 && infant == 0) {
+
+                if (adult == 1 && (child + infant) == 0) {
                     tot_price = full_price;
                 } else {
                     // adults
-                    String fullPriceString = " (" + percentage + "% of " + fs.flights.get(i).getPrice() + ")";
-                    adultString = " (" + adult + " *" + fullPriceString;
+                    String fullPriceString = " (" + percentage + "% of " + flights.get(i).getPrice() + ")";
+                    if (adult == 1 && (child + infant) != 0) {
+                        adultString = " (" + percentage + "% of " + flights.get(i).getPrice() + " + ";
+                    } else {
+                        adultString = " (" + adult + " *" + fullPriceString;
+                    }
                     tot_price = full_price * adult;
-                    if (child > 0) { 
+                    if (child > 0) {
                         // 33% discount of the full price
                         tot_price += full_price * child * 0.67;
                         childString = (child > 1 ? child + " *" : "") + " + 67% of" + fullPriceString;
                     }
                     if (infant > 0) {
-                        String airlineCode = fs.flights.get(i).getAirline().substring(0, 2);
+                        String airlineCode = flights.get(i).getAirline().substring(0, 2);
 
                         double infant_price = 0;
                         if (infant > 0) {
-                            for (Airline a : fs.airlines) {
+                            for (Airline a : airlines) {
                                 if (a.getCode().contains(airlineCode)) {
                                     infant_price = a.getInfantPrice();
                                     break;
                                 }
                             }
                             tot_price += infant_price * infant;
-                            infantString = " + " + (infant > 1 ? infant + " * " : "") +  decf.format(infant_price);
-//                            infantString = " + " + (infant > 1 ? infant + " * " : "") +  (double) Math.round(infant_price * 100) / 100;
+                            infantString = " + " + (infant > 1 ? infant + " * " : "") + decf.format(infant_price);
                         }
                     }
                 }
-//                String outputString = fs.flights.get(i).getAirline() + ", " + (double) Math.round(tot_price * 100) / 100 + " €" + adultString + childString + infantString;
-                String outputString = fs.flights.get(i).getAirline() + ", " + decf.format(tot_price) + " €" + adultString + childString + infantString;
-                if(adult+child+infant > 1){
+                String outputString = flights.get(i).getAirline() + ", " + decf.format(tot_price) + " €" + adultString + childString + infantString;
+                if (adult + child + infant > 1) {
                     outputString += ")";
                 }
-                System.out.println(outputString);
+//                System.out.println(outputString);
+//                System.out.println(flights.get(i).getAirline() + ", " + decf.format(tot_price) + " €");
+                results.add(new ResultFlight(flights.get(i).getAirline(), tot_price ));
             }
         }
     }
@@ -207,7 +183,6 @@ public class FlightSearch {
                         String volo = row[2];
                         int prezzo = Integer.parseInt(row[3]);
                         flights.add(new Flight(volo, prezzo));
-//                        System.out.println(origine + "," + destinazione + "," + volo + "," + prezzo);
                     }
                 }
             }
