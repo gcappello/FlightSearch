@@ -19,6 +19,7 @@ public class FlightSearchTest {
     ArrayList<ResultFlight> rs1;
     ArrayList<ResultFlight> rs2;
     ArrayList<ResultFlight> rs3;
+    ArrayList<ResultFlight> rs4;
 
     DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
     Calendar cal;
@@ -98,6 +99,26 @@ public class FlightSearchTest {
         date = df.format(cal.getTime());
         FlightSearch fs3 = new FlightSearch(origin, destination, date, adult, child, infant);
         Assert.assertEquals(fs3.results.toString(),rs3.toString());
+        
+        // Test #4
+        rs4 = new ArrayList<>();
+        
+        // CDG -> FRAcal = Calendar.getInstance();
+        origin = "CDG";
+        destination = "FRA";
+        adult = 1;
+        child = 0;
+        infant = 0;
+        days = 20;
+        
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        cal.add(Calendar.DAY_OF_MONTH, days);
+        date = df.format(cal.getTime());
+        FlightSearch fs4 = new FlightSearch(origin, destination, date, adult, child, infant);
+        Assert.assertEquals(fs4.results.toString(),rs4.toString());
 
     }
 

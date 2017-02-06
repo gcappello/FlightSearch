@@ -52,9 +52,7 @@ public final class FlightSearch {
 
         searchRoute(origin, destination);
 
-        if (flights.isEmpty()) {
-            System.out.println("no flights available");
-        } else {
+        if (!flights.isEmpty()) {
             int percentage;
             if (period >= 31) {
                 // 80% of the base price
