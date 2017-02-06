@@ -18,9 +18,6 @@ public final class FlightSearch {
     ArrayList<Airline> airlines;
     ArrayList<Flight> flights;
     ArrayList<ResultFlight> results;
-    String origin, destination;
-    int adult, child, infant, period;
-    double tot_price;
 
     /**
      * @param origin
@@ -37,22 +34,18 @@ public final class FlightSearch {
         this.airlines = new ArrayList<>();
         this.flights = new ArrayList<>();
         this.results = new ArrayList<>();
-        
+
         DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
         DecimalFormat decf = new DecimalFormat("#.##");
-        
-        Date departure;
         Date today = df.parse(df.format(Calendar.getInstance().getTime()));
-//        FlightSearch fs = new FlightSearch();
+        Date departure;
+        departure = df.parse(date);
+        int period = (int) ((departure.getTime() - today.getTime()) / (24 * 60 * 60 * 1000));
 
         setup();
-
-        departure = df.parse(date);
-        period = (int) ((departure.getTime() - today.getTime()) / (24 * 60 * 60 * 1000));
-
         searchRoute(origin, destination);
 
-        if (!flights.isEmpty()) {
+        if (!flights.isEmpty() && (adult > 0)) {
             int percentage;
             if (period >= 31) {
                 // 80% of the base price
@@ -67,70 +60,30 @@ public final class FlightSearch {
                 // 150% of the base price
                 percentage = 150;
             }
-
             for (int i = 0; i < flights.size(); i++) {
+                // full price (i.e. price resulting from the days to departure date rule)
                 double full_price = (double) Math.round(flights.get(i).getPrice() * percentage) / 100;
-                String adultString = "", childString = "", infantString = "";
-
-                if (adult == 1 && (child + infant) == 0) {
-                    tot_price = full_price;
-                } else {
-                    // adults
-                    String fullPriceString = " (" + percentage + "% of " + flights.get(i).getPrice() + ")";
-                    if (adult == 1 && (child + infant) != 0) {
-                        adultString = " (" + percentage + "% of " + flights.get(i).getPrice() + " + ";
-                    } else {
-                        adultString = " (" + adult + " *" + fullPriceString;
-                    }
-                    tot_price = full_price * adult;
+                    // adult: full price
+                    double tot_price = full_price * adult;
                     if (child > 0) {
-                        // 33% discount of the full price
+                        // child: 33% discount of the full price
                         tot_price += full_price * child * 0.67;
-                        childString = (child > 1 ? child + " *" : "") + " + 67% of" + fullPriceString;
                     }
                     if (infant > 0) {
+                        // infant: fixed price depending on the airline
                         String airlineCode = flights.get(i).getAirline().substring(0, 2);
-
                         double infant_price = 0;
-                        if (infant > 0) {
-                            for (Airline a : airlines) {
-                                if (a.getCode().contains(airlineCode)) {
-                                    infant_price = a.getInfantPrice();
-                                    break;
-                                }
+                        for (Airline a : airlines) {
+                            if (a.getCode().contains(airlineCode)) {
+                                infant_price = a.getInfantPrice();
+                                break;
                             }
-                            tot_price += infant_price * infant;
-                            infantString = " + " + (infant > 1 ? infant + " * " : "") + decf.format(infant_price);
                         }
+                        tot_price += infant_price * infant;
                     }
-                }
-                String outputString = flights.get(i).getAirline() + ", " + decf.format(tot_price) + " €" + adultString + childString + infantString;
-                if (adult + child + infant > 1) {
-                    outputString += ")";
-                }
-//                System.out.println(outputString);
-//                System.out.println(flights.get(i).getAirline() + ", " + decf.format(tot_price) + " €");
-                results.add(new ResultFlight(flights.get(i).getAirline(), tot_price ));
+                results.add(new ResultFlight(flights.get(i).getAirline(), tot_price));
             }
         }
-    }
-
-    void forceExit(String s) {
-        switch (s) {
-            case "airport":
-                System.out.println("Airport code not found");
-                break;
-            case "date":
-                System.out.println("Date of departure cannot be earlier than tomorrow");
-                break;
-            case "adult":
-                System.out.println("Insert minimum 1 adult passanger");
-                break;
-            default:
-                System.out.println("Wrong input");
-                break;
-        }
-        System.exit(1);
     }
 
     void setup() {
@@ -152,15 +105,6 @@ public final class FlightSearch {
         airlines.add(new Airline("VY", "Vueling", 10));
         airlines.add(new Airline("TK", "Turkish Airlines", 5));
         airlines.add(new Airline("U2", "Easyjet", 19.90));
-    }
-
-    boolean searchAirport(String a) {
-        for (Airport ap : airports) {
-            if (ap.getCode().equals(a)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     void searchRoute(String o, String d) throws FileNotFoundException {

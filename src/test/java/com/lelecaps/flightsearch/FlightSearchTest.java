@@ -102,8 +102,7 @@ public class FlightSearchTest {
         
         // Test #4
         rs4 = new ArrayList<>();
-        
-        // CDG -> FRAcal = Calendar.getInstance();
+        // CDG -> FRA
         origin = "CDG";
         destination = "FRA";
         adult = 1;
@@ -111,6 +110,7 @@ public class FlightSearchTest {
         infant = 0;
         days = 20;
         
+        cal = Calendar.getInstance();
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
