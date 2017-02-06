@@ -16,11 +16,6 @@ import org.junit.Test;
  */
 public class FlightSearchTest {
     
-    ArrayList<ResultFlight> rs1;
-    ArrayList<ResultFlight> rs2;
-    ArrayList<ResultFlight> rs3;
-    ArrayList<ResultFlight> rs4;
-
     DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
     Calendar cal;
     String date;
@@ -31,13 +26,12 @@ public class FlightSearchTest {
     }
 
     @Test
-    public void testFightSearch() throws FileNotFoundException, ParseException {
-        
+    public void testFightSearchTest1() throws FileNotFoundException, ParseException {
         // Test #1
-        rs1 = new ArrayList<>();
-        rs1.add(new ResultFlight("TK2372", 157.6));
-        rs1.add(new ResultFlight("TK2659", 198.4));
-        rs1.add(new ResultFlight("LH5909", 90.4));
+        ArrayList<ResultFlight> rs = new ArrayList<>();
+        rs.add(new ResultFlight("TK2372", 157.6));
+        rs.add(new ResultFlight("TK2659", 198.4));
+        rs.add(new ResultFlight("LH5909", 90.4));
         // 1 adult, 31 days to the departure date, flying AMS -> FRA
         origin = "AMS";
         destination = "FRA";
@@ -53,13 +47,16 @@ public class FlightSearchTest {
         cal.set(Calendar.MILLISECOND, 0);
         cal.add(Calendar.DAY_OF_MONTH, days);
         date = df.format(cal.getTime());
-        FlightSearch fs1 = new FlightSearch(origin, destination, date, adult, child, infant);
-        Assert.assertEquals(fs1.results.toString(),rs1.toString());
-        
+        FlightSearch fs = new FlightSearch(origin, destination, date, adult, child, infant);
+        Assert.assertEquals(fs.results.toString(),rs.toString());
+    }
+    
+    @Test
+    public void testFightSearchTest2() throws FileNotFoundException, ParseException {
         // Test #2
-        rs2 = new ArrayList<>();
-        rs2.add(new ResultFlight("TK8891", 806));
-        rs2.add(new ResultFlight("LH1085", 481.19));
+        ArrayList<ResultFlight> rs = new ArrayList<>();
+        rs.add(new ResultFlight("TK8891", 806));
+        rs.add(new ResultFlight("LH1085", 481.19));
         // 2 adults, 1 child, 1 infant, 15 days to the departure date, flying LHR -> IST
         origin = "LHR";
         destination = "IST";
@@ -75,13 +72,16 @@ public class FlightSearchTest {
         cal.set(Calendar.MILLISECOND, 0);
         cal.add(Calendar.DAY_OF_MONTH, days);
         date = df.format(cal.getTime());
-        FlightSearch fs2 = new FlightSearch(origin, destination, date, adult, child, infant);
-        Assert.assertEquals(fs2.results.toString(),rs2.toString());
-        
+        FlightSearch fs = new FlightSearch(origin, destination, date, adult, child, infant);
+        Assert.assertEquals(fs.results.toString(),rs.toString());
+    }
+    
+    @Test
+    public void testFightSearchTest3() throws FileNotFoundException, ParseException {
         // Test #3
-        rs3 = new ArrayList<>();
-        rs3.add(new ResultFlight("IB2171", 909.09));
-        rs3.add(new ResultFlight("LH5496", 1028.43));
+        ArrayList<ResultFlight> rs = new ArrayList<>();
+        rs.add(new ResultFlight("IB2171", 909.09));
+        rs.add(new ResultFlight("LH5496", 1028.43));
         // 1 adult, 2 children, 2 days to the departure date, flying BCN -> MAD
         origin = "BCN";
         destination = "MAD";
@@ -97,11 +97,14 @@ public class FlightSearchTest {
         cal.set(Calendar.MILLISECOND, 0);
         cal.add(Calendar.DAY_OF_MONTH, days);
         date = df.format(cal.getTime());
-        FlightSearch fs3 = new FlightSearch(origin, destination, date, adult, child, infant);
-        Assert.assertEquals(fs3.results.toString(),rs3.toString());
-        
+        FlightSearch fs = new FlightSearch(origin, destination, date, adult, child, infant);
+        Assert.assertEquals(fs.results.toString(),rs.toString());
+    }
+    
+    @Test
+    public void testFightSearchTest4() throws FileNotFoundException, ParseException {
         // Test #4
-        rs4 = new ArrayList<>();
+        ArrayList<ResultFlight> rs = new ArrayList<>();
         // CDG -> FRA
         origin = "CDG";
         destination = "FRA";
@@ -117,9 +120,8 @@ public class FlightSearchTest {
         cal.set(Calendar.MILLISECOND, 0);
         cal.add(Calendar.DAY_OF_MONTH, days);
         date = df.format(cal.getTime());
-        FlightSearch fs4 = new FlightSearch(origin, destination, date, adult, child, infant);
-        Assert.assertEquals(fs4.results.toString(),rs4.toString());
-
+        FlightSearch fs = new FlightSearch(origin, destination, date, adult, child, infant);
+        Assert.assertEquals(fs.results.toString(),rs.toString());
     }
 
 }
